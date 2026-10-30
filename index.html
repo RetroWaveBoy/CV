@@ -1,0 +1,1445 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Григорий Романенко — QA Engineer · Резюме</title>
+<meta name="description" content="Романенко Григорий — Старший инженер по обеспечению качества в Т-Банке. Shift-left, Zero Bug Policy, держатель практики «Тестовая пирамида». Playwright, Jest, TypeScript, GitLab CI.">
+<meta name="author" content="Григорий Романенко">
+<meta name="theme-color" content="#0b0b10">
+<meta property="og:type" content="profile">
+<meta property="og:title" content="Григорий Романенко — QA Engineer">
+<meta property="og:description" content="Старший инженер по обеспечению качества в Т-Банке. Shift-left, Zero Bug Policy, тестовая пирамида. Регресс автоматизирован, пайплайн — 20 минут.">
+<meta property="og:locale" content="ru_RU">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3CradialGradient id='g' cx='34%25' cy='28%25'%3E%3Cstop offset='0' stop-color='%23ffd9b0'/%3E%3Cstop offset='.45' stop-color='%23ff8a2b'/%3E%3Cstop offset='1' stop-color='%236b2600'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='32' cy='32' r='30' fill='url(%23g)'/%3E%3C/svg%3E">
+<style>
+  :root{
+    --bg-0:#08080c;
+    --bg-1:#0e0e15;
+    --bg-2:#15151f;
+    --orange:#ff7a18;
+    --orange-2:#ffa552;
+    --orange-3:#ffcf9e;
+    --ember:#b3490f;
+    --text:#f4ece4;
+    --muted:#a99b90;
+    --line:rgba(255,138,60,.24);
+    --glass:rgba(255,255,255,.045);
+    --glass-2:rgba(255,255,255,.075);
+    --ok:#7ddc8a;
+    --radius:12px;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Courier New",monospace;
+    --sans:"Trebuchet MS","Segoe UI",Verdana,Geneva,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+  body{
+    font-family:var(--sans);
+    color:var(--text);
+    background:
+      radial-gradient(110% 70% at 12% -8%, rgba(255,122,24,.30) 0%, rgba(255,122,24,0) 52%),
+      radial-gradient(90% 60% at 92% 4%, rgba(255,70,10,.16) 0%, rgba(255,70,10,0) 55%),
+      radial-gradient(80% 55% at 80% 96%, rgba(255,150,60,.12) 0%, rgba(255,150,60,0) 60%),
+      linear-gradient(180deg,#0b0b12 0%,#0a0a0f 40%,#101018 100%);
+    background-attachment:fixed;
+    min-height:100vh;
+    padding:22px 16px 84px;
+    overflow-x:hidden;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* reading progress */
+  .progress{position:fixed;top:0;left:0;height:3px;width:0;z-index:60;
+    background:linear-gradient(90deg,#ff4d00,#ff9838,#ffd6a8);
+    box-shadow:0 0 12px rgba(255,140,50,.85);
+    transition:width .08s linear}
+
+  /* ---------- atmosphere ---------- */
+  .bubbles{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+  .bubble{
+    position:absolute;border-radius:50%;
+    background:
+      radial-gradient(circle at 32% 28%, rgba(255,220,180,.55) 0%, rgba(255,150,70,.22) 18%, rgba(255,120,30,.05) 48%, rgba(0,0,0,0) 64%),
+      radial-gradient(circle at 70% 78%, rgba(255,180,120,.16) 0%, rgba(0,0,0,0) 45%);
+    border:1px solid rgba(255,170,110,.16);
+    box-shadow:inset -6px -8px 16px rgba(255,110,20,.14), inset 6px 8px 14px rgba(255,200,150,.10);
+    animation:drift linear infinite;
+  }
+  @keyframes drift{
+    0%{transform:translate3d(0,0,0) scale(1)}
+    50%{transform:translate3d(12px,-26px,0) scale(1.07)}
+    100%{transform:translate3d(0,0,0) scale(1)}
+  }
+  .glow-top{position:fixed;top:-260px;left:-160px;width:640px;height:640px;border-radius:50%;
+    background:radial-gradient(circle,rgba(255,130,40,.28) 0%,rgba(255,130,40,0) 66%);
+    pointer-events:none;z-index:0}
+
+  /* ---------- CRT overlay: minimal static effects only ---------- */
+  .crt-fx{position:fixed;inset:0;z-index:55;pointer-events:none;opacity:1;
+    transition:opacity .45s ease}
+  body.no-crt .crt-fx{opacity:0}
+
+  .crt-fx > span{position:absolute;inset:0;display:block}
+
+  /* hard scanlines - static */
+  .crt-fx .scan{
+    background:repeating-linear-gradient(180deg,
+      rgba(0,0,0,.55) 0px, rgba(0,0,0,.55) 1px,
+      rgba(0,0,0,0) 1px, rgba(0,0,0,0) 3px);
+    opacity:.35;
+  }
+  /* aperture grille: subtle vertical RGB mask */
+  .crt-fx .grille{
+    background:repeating-linear-gradient(90deg,
+      rgba(255,50,50,.08) 0 1px,
+      rgba(60,255,130,.05) 1px 2px,
+      rgba(80,130,255,.08) 2px 3px);
+    opacity:.40;
+  }
+  /* vignette only - no animations (removed beam, jitter, flicker) */
+  .crt-fx .vignette{
+    background:radial-gradient(120% 120% at 50% 50%,rgba(0,0,0,0) 50%,rgba(0,0,0,.55) 100%);
+    box-shadow:inset 0 0 100px 30px rgba(0,0,0,.70);
+  }
+
+  /* ---------- window chrome ---------- */
+  .win{
+    position:relative;z-index:1;
+    max-width:1060px;margin:0 auto;
+    border-radius:var(--radius);
+    background:linear-gradient(170deg,rgba(30,26,32,.86),rgba(16,16,22,.9) 45%,rgba(22,18,20,.88));
+    border:1px solid var(--line);
+    box-shadow:
+      0 1px 0 rgba(255,190,140,.14) inset,
+      0 0 0 1px rgba(0,0,0,.5),
+      0 34px 80px -22px rgba(0,0,0,.9),
+      0 0 90px -30px rgba(255,110,20,.55);
+    backdrop-filter:blur(16px) saturate(1.2);
+    -webkit-backdrop-filter:blur(16px) saturate(1.2);
+    overflow:hidden;
+    animation:winIn .55s ease-out both;
+  }
+  @keyframes winIn{from{opacity:0;transform:translateY(16px) scale(.99)}to{opacity:1;transform:none}}
+  /* mouse-follow sheen */
+  .win::before{
+    content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
+    background:radial-gradient(420px circle at var(--mx,50%) var(--my,0%),rgba(255,150,70,.10),rgba(0,0,0,0) 62%);
+    transition:background .2s ease;
+  }
+  .win > *{position:relative;z-index:1}
+
+  .titlebar{
+    display:flex;align-items:center;gap:10px;
+    padding:9px 12px 9px 14px;
+    background:linear-gradient(180deg,rgba(58,40,30,.95),rgba(34,24,20,.92) 55%,rgba(46,32,24,.95));
+    border-bottom:1px solid var(--line);
+    font-size:12px;letter-spacing:.4px;color:var(--orange-3);
+    font-family:var(--mono);
+  }
+  .titlebar .dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto;
+    background:radial-gradient(circle at 35% 30%,#fff,#ff9a40 55%,#c04a06);
+    box-shadow:0 0 9px rgba(255,140,50,.95)}
+  .titlebar .name{flex:1;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;opacity:.92}
+  .win-btns{display:flex;gap:5px;flex:0 0 auto}
+  .win-btns i{width:17px;height:15px;border-radius:3px;display:block;
+    border:1px solid rgba(255,160,90,.35);
+    background:linear-gradient(180deg,rgba(255,220,190,.22),rgba(255,150,70,.12) 48%,rgba(255,120,40,.18));
+    box-shadow:0 1px 0 rgba(255,220,190,.22) inset}
+  .win-btns i.close{background:linear-gradient(180deg,#ffb199,#f2502a 50%,#a81f00)}
+
+  .win-body{padding:24px 26px 28px}
+
+  /* ---------- section nav ---------- */
+  .nav{
+    display:flex;gap:6px;overflow-x:auto;padding:2px 0 12px;margin-bottom:6px;
+    scrollbar-width:none;-ms-overflow-style:none;
+  }
+  .nav::-webkit-scrollbar{display:none}
+  .nav a{
+    flex:0 0 auto;font-size:12px;font-family:var(--mono);letter-spacing:.4px;text-decoration:none;
+    padding:7px 12px;border-radius:8px;color:var(--muted);
+    background:var(--glass);border:1px solid rgba(255,255,255,.07);
+    transition:color .18s,border-color .18s,background .18s;
+  }
+  .nav a:hover{color:var(--orange-3);border-color:var(--line)}
+
+  /* ---------- hero ---------- */
+  .hero{display:flex;gap:22px;align-items:center;flex-wrap:wrap;margin-bottom:20px}
+  .orb{
+    width:104px;height:104px;flex:0 0 auto;border-radius:50%;
+    display:grid;place-items:center;position:relative;
+    font-family:var(--mono);font-weight:700;font-size:32px;letter-spacing:1px;
+    color:#2a1000;
+    background:radial-gradient(circle at 34% 26%,#fff6ea 0%,#ffc887 16%,#ff8a2b 48%,#c2450a 76%,#5e1f00 100%);
+    box-shadow:
+      0 0 0 3px rgba(255,180,120,.16),
+      0 0 0 4px rgba(0,0,0,.6),
+      0 14px 30px -8px rgba(255,110,20,.6),
+      inset -8px -10px 22px rgba(60,15,0,.55),
+      inset 8px 10px 20px rgba(255,255,255,.42);
+  }
+  .orb::after{
+    content:"";position:absolute;top:11px;left:17px;width:36px;height:24px;border-radius:50%;
+    background:radial-gradient(circle,rgba(255,255,255,.95),rgba(255,255,255,0) 70%);
+    filter:blur(1px);transform:rotate(-18deg);
+  }
+  .hero h1{
+    font-size:clamp(24px,4.4vw,40px);line-height:1.12;letter-spacing:-.6px;
+    background:linear-gradient(180deg,#fff4e8 0%,#ffc48c 58%,#ff8a2b 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .hero .role{margin-top:6px;font-size:14.5px;font-weight:700;color:var(--orange-2)}
+  .hero .role span{color:var(--muted);font-weight:400}
+
+  .chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
+  .chip{
+    display:inline-flex;align-items:center;gap:6px;min-height:30px;
+    padding:4px 11px;border-radius:999px;font-size:12.5px;text-decoration:none;color:var(--orange-3);
+    background:linear-gradient(180deg,rgba(255,255,255,.09),rgba(255,140,60,.07));
+    border:1px solid rgba(255,150,80,.26);
+    box-shadow:0 1px 0 rgba(255,255,255,.10) inset;
+    transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease;
+    font-family:var(--sans);
+  }
+  a.chip:hover,button.chip:hover{
+    transform:translateY(-1px);border-color:rgba(255,170,100,.55);
+    box-shadow:0 6px 18px -6px rgba(255,120,30,.75),0 1px 0 rgba(255,255,255,.14) inset;
+  }
+  .chip b{color:#fff}
+  button.chip{cursor:pointer;font:inherit;font-size:12.5px}
+  a.chip:focus-visible,button.chip:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+
+  /* ---------- terminal ---------- */
+  .term{
+    margin:0 0 22px;border-radius:10px;overflow:hidden;
+    border:1px solid rgba(255,140,60,.3);
+    box-shadow:0 10px 30px -12px rgba(0,0,0,.9),0 0 40px -20px rgba(255,120,30,.7),inset 0 1px 0 rgba(255,190,140,.12);
+    background:linear-gradient(180deg,#120c0a,#0a0706);
+  }
+  .term-head{
+    display:flex;align-items:center;gap:7px;padding:6px 11px;
+    background:linear-gradient(180deg,rgba(70,44,28,.95),rgba(44,28,18,.95));
+    border-bottom:1px solid rgba(255,140,60,.22);
+    font-size:11px;font-family:var(--mono);color:var(--orange-3);letter-spacing:.5px;
+  }
+  .term-head .dot{width:8px;height:8px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%,#fff,#ff9a40 60%,#c04a06)}
+  .term-body{
+    font-family:var(--mono);font-size:12.5px;line-height:1.75;
+    color:#ffbf85;padding:12px 14px;overflow-x:auto;
+    text-shadow:0 0 10px rgba(255,140,50,.45);
+  }
+  .term-body .p{color:#ff8a2b}
+  .term-body .out{color:#e6d6c8}
+  .term-body .warn{color:#ffd98a}
+  .term-body .ok{color:var(--ok)}
+  .t-line{white-space:pre-wrap;word-break:break-word}
+  .term--js .t-out{opacity:0;transform:translateY(3px);transition:opacity .3s ease,transform .3s ease}
+  .term--js .t-out.show{opacity:1;transform:none}
+  .caret{display:inline-block;width:7px;height:14px;vertical-align:-2px;background:#ff8a2b;
+    box-shadow:0 0 8px rgba(255,140,50,.9);animation:blink 1s steps(1) infinite}
+  @keyframes blink{0%,49%{opacity:1}50%,100%{opacity:0}}
+
+  /* ---------- layout ---------- */
+  .grid{display:grid;grid-template-columns:1.62fr 1fr;gap:22px;align-items:start}
+  section{margin-bottom:20px;scroll-margin-top:16px}
+  h2{
+    display:flex;align-items:center;gap:8px;
+    font-size:11.5px;font-family:var(--mono);letter-spacing:1.7px;text-transform:uppercase;
+    color:var(--orange-2);margin-bottom:10px;
+  }
+  h2::after{content:"";flex:1;height:1px;
+    background:linear-gradient(90deg,rgba(255,140,60,.5),rgba(255,140,60,0))}
+  h2 .ico{
+    width:15px;height:15px;border-radius:4px;flex:0 0 auto;
+    background:radial-gradient(circle at 34% 28%,#fff2e2,#ff9a3d 55%,#b3490f);
+    box-shadow:0 0 10px -1px rgba(255,140,50,.9),inset 0 1px 0 rgba(255,255,255,.6);
+  }
+
+  /* ---------- metric widgets ---------- */
+  .metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+  .widget{
+    position:relative;text-align:left;cursor:pointer;width:100%;font:inherit;color:inherit;
+    padding:12px 13px 11px;border-radius:10px;overflow:hidden;
+    background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,120,40,.05));
+    border:1px solid rgba(255,150,80,.24);
+    box-shadow:0 1px 0 rgba(255,220,190,.10) inset,0 8px 22px -14px rgba(0,0,0,.95);
+    transition:border-color .18s ease,transform .18s ease,box-shadow .18s ease;
+  }
+  .widget::before{
+    content:"";position:absolute;inset:0 0 auto;height:50%;pointer-events:none;
+    background:linear-gradient(180deg,rgba(255,220,180,.14),rgba(255,255,255,0));
+  }
+  .widget:hover{transform:translateY(-2px);border-color:rgba(255,175,105,.5);
+    box-shadow:0 12px 28px -16px rgba(255,110,20,.85),0 1px 0 rgba(255,220,190,.14) inset}
+  .widget:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+  .widget .num{
+    position:relative;font-family:var(--mono);font-size:26px;font-weight:700;line-height:1.05;
+    letter-spacing:-.5px;color:var(--orange-2);text-shadow:0 0 18px rgba(255,140,50,.45);
+    display:flex;align-items:baseline;gap:6px;
+  }
+  .widget .num .plus{margin-left:auto;font-size:13px;color:var(--muted);opacity:.55;
+    transition:transform .25s ease,opacity .25s ease}
+  .widget.open .num .plus{transform:rotate(45deg);opacity:1;color:var(--orange-2)}
+  .widget .cap{position:relative;display:block;font-size:12px;color:var(--muted);margin-top:4px;line-height:1.4}
+  .widget .detail{
+    position:relative;display:block;overflow:hidden;max-height:0;opacity:0;
+    transition:max-height .28s ease,opacity .28s ease,margin .28s ease;
+    font-size:12px;color:#d9c8ba;line-height:1.45;
+  }
+  .widget.open .detail{max-height:280px;opacity:1;margin-top:8px;padding-top:8px;
+    border-top:1px dashed rgba(255,150,80,.28)}
+
+  /* ---------- experience ---------- */
+  .job{
+    position:relative;padding:15px 16px 15px 22px;border-radius:10px;
+    background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,120,40,.035));
+    border:1px solid rgba(255,150,80,.22);
+    box-shadow:0 1px 0 rgba(255,220,190,.08) inset,0 10px 26px -18px #000;
+  }
+  .job::before{
+    content:"";position:absolute;left:7px;top:16px;bottom:16px;width:3px;border-radius:4px;
+    background:linear-gradient(180deg,#ffc35c,#ff7a18,#b3490f);
+    box-shadow:0 0 14px rgba(255,130,40,.75);
+  }
+  .job-head{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:baseline}
+  .job-head h3{font-size:16px;color:#ffe5d0;letter-spacing:-.2px}
+  .job-head .when{
+    font-size:11px;font-family:var(--mono);color:var(--orange-3);white-space:nowrap;
+    padding:2px 9px;border-radius:999px;
+    background:linear-gradient(180deg,rgba(255,150,70,.20),rgba(255,120,40,.10));
+    border:1px solid rgba(255,160,90,.32);
+  }
+  .job-meta{font-size:12.5px;color:var(--muted);margin:4px 0 12px}
+  .job ul{list-style:none;display:grid;gap:10px}
+  .job li{position:relative;padding-left:19px;font-size:13.5px;line-height:1.55;color:#e8ddd3}
+  .job li::before{
+    content:"";position:absolute;left:3px;top:7px;width:7px;height:7px;border-radius:2px;
+    transform:rotate(45deg);
+    background:linear-gradient(135deg,#ffd08a,#ff7a18);
+    box-shadow:0 0 8px rgba(255,130,40,.85),inset 0 1px 0 rgba(255,255,255,.6);
+  }
+  .job li b{color:#ffd3a6}
+  .job li em{font-style:normal;color:#ffb066;font-weight:700}
+
+  /* ---------- side cards ---------- */
+  .card{
+    padding:14px 15px;border-radius:10px;
+    background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,120,40,.035));
+    border:1px solid rgba(255,150,80,.20);
+    box-shadow:0 1px 0 rgba(255,220,190,.08) inset,0 10px 26px -18px #000;
+  }
+  .card p{font-size:13px;line-height:1.6;color:#ddd0c5}
+  .card p + p{margin-top:9px}
+  .card strong{color:#ffd3a6}
+
+  .edu + .edu{margin-top:12px;padding-top:12px;border-top:1px dashed rgba(255,150,80,.22)}
+  .edu .deg{font-size:13.5px;font-weight:700;color:#ffe5d0}
+  .edu .where{font-size:12.5px;color:var(--muted);margin-top:1px;display:flex;align-items:center;gap:8px}
+  .edu .yr{font-size:11.5px;font-family:var(--mono);color:var(--orange-2);margin-top:2px}
+  .uni-logo{height:20px;width:auto;flex-shrink:0;opacity:.9}
+  .uni-logo.fizfak{filter:sepia(1) hue-rotate(-20deg) saturate(1.5) brightness(0.9)}
+
+  .lang{display:flex;justify-content:space-between;align-items:center;gap:10px;
+    font-size:13px;padding:7px 0;border-bottom:1px dashed rgba(255,150,80,.20)}
+  .lang:last-child{border-bottom:0;padding-bottom:0}
+  .lang .lvl{font-size:11px;color:var(--orange-3);font-family:var(--mono);white-space:nowrap;
+    padding:1px 8px;border-radius:999px;
+    background:linear-gradient(180deg,rgba(255,150,70,.20),rgba(255,120,40,.10));
+    border:1px solid rgba(255,160,90,.30)}
+  .bar{height:5px;border-radius:4px;margin-top:6px;background:rgba(255,255,255,.08);overflow:hidden}
+  .bar > i{display:block;height:100%;width:0;border-radius:4px;
+    background:linear-gradient(90deg,#b3490f,#ff7a18,#ffc35c);
+    box-shadow:0 0 12px rgba(255,130,40,.7);
+    transition:width 1s cubic-bezier(.2,.8,.2,1)}
+
+  /* ---------- easter egg: bug hunt ---------- */
+  .degauss .win{animation:degauss .9s ease-out}
+  @keyframes degauss{
+    0%{filter:none;transform:none}
+    12%{filter:hue-rotate(90deg) saturate(2.4) blur(1px);transform:skewX(4deg) scale(1.02)}
+    26%{filter:hue-rotate(-120deg) saturate(3) blur(2px);transform:skewX(-6deg) scale(.98)}
+    42%{filter:hue-rotate(200deg) saturate(2) blur(1px);transform:skewX(3deg)}
+    60%{filter:hue-rotate(-40deg) saturate(1.6);transform:skewX(-1.5deg)}
+    100%{filter:none;transform:none}
+  }
+  .bug-layer{position:fixed;inset:0;z-index:58;pointer-events:none}
+  .bug{
+    position:absolute;left:0;top:0;width:44px;height:44px;margin:-22px 0 0 -22px;
+    display:grid;place-items:center;font-size:28px;line-height:1;
+    cursor:crosshair;pointer-events:auto;user-select:none;-webkit-user-select:none;
+    border:0;background:none;padding:0;
+    filter:drop-shadow(0 0 8px rgba(255,120,30,.9)) drop-shadow(0 3px 2px rgba(0,0,0,.7));
+    will-change:transform;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .bug:focus-visible{outline:2px solid var(--orange);border-radius:50%}
+  .bug.squash{animation:squash .35s ease-out forwards;pointer-events:none}
+  @keyframes squash{
+    0%{opacity:1}
+    40%{opacity:1;filter:drop-shadow(0 0 18px #ff7a18) brightness(2)}
+    100%{opacity:0;filter:blur(3px)}
+  }
+  .splat{position:absolute;width:70px;height:70px;margin:-35px 0 0 -35px;border-radius:50%;
+    pointer-events:none;
+    background:radial-gradient(circle,rgba(255,180,90,.9) 0%,rgba(255,110,20,.45) 35%,rgba(255,110,20,0) 70%);
+    animation:splat .5s ease-out forwards}
+  @keyframes splat{from{transform:scale(.2);opacity:1}to{transform:scale(1.6);opacity:0}}
+
+  .hud{
+    position:fixed;top:14px;left:50%;transform:translate(-50%,-80px);z-index:60;
+    display:flex;align-items:center;gap:12px;padding:8px 14px;border-radius:10px;
+    font-family:var(--mono);font-size:12.5px;color:#ffd9b0;white-space:nowrap;
+    background:linear-gradient(180deg,rgba(40,24,14,.95),rgba(16,10,8,.96));
+    border:1px solid rgba(255,150,80,.5);
+    box-shadow:0 12px 30px -10px rgba(0,0,0,.9),0 0 26px -6px rgba(255,120,30,.8);
+    transition:transform .35s cubic-bezier(.2,.9,.3,1.3);
+  }
+  .hud.show{transform:translate(-50%,0)}
+  .hud b{color:#ff9a40;text-shadow:0 0 10px rgba(255,140,50,.8)}
+  .hud button{font:inherit;font-size:11.5px;color:#2a1000;font-weight:700;cursor:pointer;
+    padding:3px 9px;border-radius:6px;border:1px solid #ffc48c;
+    background:linear-gradient(180deg,#ffc48c,#ff8a2b)}
+
+  .egg-modal{
+    position:fixed;inset:0;z-index:65;display:grid;place-items:center;padding:16px;
+    background:rgba(5,3,2,.72);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+    opacity:0;pointer-events:none;transition:opacity .3s ease;
+  }
+  .egg-modal.show{opacity:1;pointer-events:auto}
+  .egg-box{
+    width:min(520px,100%);border-radius:12px;overflow:hidden;
+    border:1px solid rgba(255,150,80,.55);
+    background:linear-gradient(180deg,#140c08,#090605);
+    box-shadow:0 30px 80px -20px #000,0 0 60px -10px rgba(255,110,20,.75);
+    transform:scale(.92);transition:transform .35s cubic-bezier(.2,.9,.3,1.3);
+  }
+  .egg-modal.show .egg-box{transform:none}
+  .egg-box .term-head{justify-content:space-between}
+  .egg-box .x{font:inherit;color:var(--orange-3);background:none;border:0;cursor:pointer;
+    font-size:16px;line-height:1;padding:2px 6px}
+  .egg-body{padding:16px 18px 18px;font-family:var(--mono);font-size:13px;line-height:1.75;
+    color:#ffbf85;text-shadow:0 0 10px rgba(255,140,50,.45)}
+  .egg-body .big{font-size:20px;color:#ffe0bd;font-weight:700;letter-spacing:.5px;margin:4px 0 6px}
+  .egg-body .ok{color:var(--ok)}
+  .egg-body .out{color:#e6d6c8}
+  .egg-body a{color:#ffd08a}
+  .egg-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+  .egg-actions a,.egg-actions button{
+    font:inherit;font-size:12.5px;text-decoration:none;cursor:pointer;
+    padding:8px 13px;border-radius:8px;min-height:38px;display:inline-flex;align-items:center;
+    border:1px solid rgba(255,160,90,.4);color:var(--orange-3);
+    background:linear-gradient(180deg,rgba(255,150,70,.16),rgba(255,120,40,.07));
+  }
+  .egg-actions .primary{color:#2a1000;font-weight:700;border-color:#ffc48c;
+    background:linear-gradient(180deg,#ffc48c,#ff8a2b)}
+  .hint{opacity:.35;letter-spacing:2px;cursor:help;transition:opacity .2s}
+  .hint:hover{opacity:.9;color:var(--orange-2)}
+
+  /* ---------- stack ---------- */
+  .stack-group + .stack-group{margin-top:12px}
+  .stack-group .lbl{font-size:10.5px;font-family:var(--mono);letter-spacing:1.2px;
+    text-transform:uppercase;color:#8d7a6d;margin-bottom:7px}
+  .pills{display:flex;flex-wrap:wrap;gap:6px}
+  .pill{
+    font-size:12px;padding:4px 10px;border-radius:7px;color:#ffd0a0;font-family:var(--mono);
+    background:linear-gradient(180deg,rgba(255,255,255,.09),rgba(255,140,60,.06) 50%,rgba(255,120,40,.09));
+    border:1px solid rgba(255,150,80,.24);
+    box-shadow:0 1px 0 rgba(255,230,210,.12) inset;
+    transition:color .15s,border-color .15s,transform .15s;
+  }
+  .pill:hover{color:#fff;border-color:rgba(255,175,105,.55);transform:translateY(-1px)}
+
+  /* ---------- footer + taskbar ---------- */
+  .foot{
+    margin-top:6px;padding-top:14px;border-top:1px solid rgba(255,150,80,.20);
+    font-size:11.5px;color:#8d7a6d;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;
+    font-family:var(--mono);
+  }
+  .taskbar{
+    position:fixed;left:0;right:0;bottom:0;z-index:50;height:48px;
+    display:flex;align-items:center;gap:7px;padding:0 8px;
+    background:linear-gradient(180deg,rgba(56,38,26,.92),rgba(26,18,14,.95) 55%,rgba(44,30,22,.95));
+    border-top:1px solid rgba(255,160,90,.35);
+    box-shadow:0 -10px 30px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,200,150,.18);
+    backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+    font-family:var(--mono);font-size:11.5px;color:var(--orange-3);
+  }
+  .start{
+    display:flex;align-items:center;gap:7px;height:34px;padding:0 14px 0 11px;border-radius:8px;
+    background:linear-gradient(180deg,#ffb35f,#ff7a18 48%,#c2450a 52%,#ff9838);
+    border:1px solid rgba(255,190,140,.5);color:#2a1000;font-weight:700;
+    box-shadow:0 1px 0 rgba(255,255,255,.5) inset,0 4px 14px -4px rgba(255,110,20,.9);
+    white-space:nowrap;flex:0 0 auto;
+  }
+  .start .flag{width:13px;height:13px;border-radius:3px;flex:0 0 auto;
+    background:conic-gradient(from 0deg,#ff5f4d 0 25%,#ffd24d 0 50%,#5ad46a 0 75%,#4fb4ea 0);
+    box-shadow:0 0 0 1px rgba(255,255,255,.7) inset}
+  .tb-item{
+    height:32px;display:inline-flex;align-items:center;gap:6px;
+    padding:0 12px;border-radius:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    background:linear-gradient(180deg,rgba(255,200,150,.14),rgba(255,140,60,.07));
+    border:1px solid rgba(255,160,90,.26);color:var(--orange-3);
+    text-decoration:none;cursor:pointer;font:inherit;font-size:11.5px;
+    transition:background .16s,border-color .16s,color .16s;
+  }
+  .tb-item:hover{background:linear-gradient(180deg,rgba(255,200,150,.24),rgba(255,140,60,.13));color:#fff}
+  .tb-item:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+  .tb-item .led{width:7px;height:7px;border-radius:50%;background:#6b4a34;flex:0 0 auto;
+    box-shadow:0 0 0 1px rgba(0,0,0,.5) inset;transition:background .2s,box-shadow .2s}
+  .tb-item[aria-pressed="true"] .led{background:#ff6a00;box-shadow:0 0 8px #ff6a00 inset}
+  .clock{margin-left:auto;padding:0 11px;height:32px;display:inline-flex;align-items:center;
+    border-radius:7px;background:rgba(255,190,140,.08);
+    border:1px solid rgba(255,160,90,.22);font-variant-numeric:tabular-nums;white-space:nowrap}
+
+  /* ---------- toast ---------- */
+  .toast{
+    position:fixed;left:50%;bottom:66px;transform:translate(-50%,14px);
+    z-index:70;padding:10px 16px;border-radius:10px;
+    font-family:var(--mono);font-size:12.5px;color:#2a1000;font-weight:700;
+    background:linear-gradient(180deg,#ffc48c,#ff8a2b);
+    border:1px solid #ffd2a8;
+    box-shadow:0 16px 40px -12px rgba(255,110,20,.9);
+    opacity:0;pointer-events:none;transition:opacity .22s ease,transform .22s ease;
+    max-width:calc(100vw - 32px);text-align:center;
+  }
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+
+  /* ---------- responsive ---------- */
+  @media(max-width:860px){
+    .grid{grid-template-columns:1fr}
+    .win-body{padding:20px 18px 24px}
+  }
+  @media(max-width:560px){
+    body{padding:12px 10px 80px}
+    .win-body{padding:16px 14px 20px}
+    .hero{gap:14px}
+    .hero h1{font-size:26px}
+    .orb{width:76px;height:76px;font-size:23px}
+    .orb::after{top:8px;left:12px;width:26px;height:18px}
+    .metrics{grid-template-columns:1fr}
+    .job{padding:14px 13px 14px 20px}
+    .job li{font-size:13px}
+    .job-head h3{font-size:15px}
+    .chip,button.chip{font-size:12px;min-height:34px}
+    .taskbar .tb-file{display:none}
+    .clock{padding:0 9px}
+    .foot{flex-direction:column;gap:4px}
+    .nav{padding-bottom:10px}
+    section{margin-bottom:16px}
+  }
+  @media(max-width:420px){
+    .lang-sw{display:none}
+  }
+  @media(max-width:380px){
+    .start{padding:0 10px}
+    .start span:last-child{display:none}
+  }
+
+  /* ---------- language switcher ---------- */
+  .lang-sw{display:flex;gap:3px;flex:0 0 auto;margin-left:8px}
+  .lang-sw button{
+    font:inherit;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.5px;
+    min-width:28px;height:22px;padding:0 6px;border-radius:4px;cursor:pointer;
+    color:var(--orange-3);
+    border:1px solid rgba(255,160,90,.35);
+    background:linear-gradient(180deg,rgba(255,220,190,.14),rgba(255,140,60,.06));
+    transition:color .15s,border-color .15s,background .15s;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .lang-sw button:hover{color:#fff;border-color:rgba(255,175,105,.6)}
+  .lang-sw button:focus-visible{outline:2px solid var(--orange);outline-offset:1px}
+  .lang-sw button[aria-pressed="true"]{
+    color:#2a1000;border-color:#ffb877;
+    background:linear-gradient(180deg,#ffb35f,#ff7a18);
+    box-shadow:0 0 12px -2px rgba(255,122,24,.9);
+  }
+
+  /* ---------- motion / print ---------- */
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    .bubble,.caret,.degauss .win{animation:none!important}
+    *{transition:none!important}
+  }
+  @media print{
+    body{background:#fff;color:#111;padding:0}
+    .progress,.bubbles,.glow-top,.taskbar,.toast,.nav,.crt-fx{display:none!important}
+    .win{box-shadow:none;border:0;background:#fff;backdrop-filter:none;max-width:none;animation:none}
+    .win::before{display:none}
+    .titlebar{display:none}
+    .win-body{padding:0}
+    h2{color:#8a3b00}
+    .hero h1{background:none;-webkit-text-fill-color:#111;color:#111}
+    .hero .role{color:#8a3b00}
+    .hero .role span,.job-meta,.edu .where,.card p,.widget .cap{color:#333}
+    .term{background:#f6f6f6;border-color:#bbb;box-shadow:none}
+    .term-head{background:#e8e8e8;color:#333}
+    .term-body{color:#111;text-shadow:none}
+    .term-body .p{color:#a13d00}
+    .term-body .out{color:#222}
+    .term--js .t-out{opacity:1!important;transform:none!important}
+    .job,.card,.widget{background:#fff;box-shadow:none;border-color:#ccc;break-inside:avoid}
+    .job li,.card p{color:#222}
+    .job li b,.card strong{color:#111}
+    .job li em{color:#a13d00}
+    .job::before{background:#c9a48a;box-shadow:none}
+    .widget .num{color:#8a3b00;text-shadow:none}
+    .widget .detail{max-height:none!important;opacity:1!important;color:#333}
+    .bug-layer,.hud,.egg-modal,.hint{display:none!important}
+    .pill{color:#333;background:#f2f2f2;border-color:#ccc}
+    .lvl{color:#333;background:#f2f2f2;border-color:#ccc}
+    .foot{color:#555}
+    @page{margin:12mm}
+  }
+</style>
+</head>
+<body>
+
+<div class="crt-fx" aria-hidden="true">
+  <span class="grille"></span>
+  <span class="scan"></span>
+  <span class="vignette"></span>
+</div>
+<div class="bug-layer" id="bugLayer" aria-hidden="true"></div>
+<div class="hud" id="hud" role="status" aria-live="polite">
+  <span>🐞 bug hunt</span>
+  <span>пойманы: <b id="hudCount">0</b>/<span id="hudTotal">0</span></span>
+  <span>⏱ <b id="hudTime">0.0</b>s</span>
+  <button type="button" id="hudQuit">esc</button>
+</div>
+<div class="egg-modal" id="eggModal" role="dialog" aria-modal="true" aria-labelledby="eggTitle">
+  <div class="egg-box">
+    <div class="term-head"><span>C:\g.romanenko\regression.log</span><button class="x" type="button" id="eggClose" aria-label="Закрыть">×</button></div>
+    <div class="egg-body" id="eggBody"></div>
+  </div>
+</div>
+
+<div class="progress" id="progress" aria-hidden="true"></div>
+<div class="glow-top" aria-hidden="true"></div>
+<div class="bubbles" aria-hidden="true">
+  <span class="bubble" style="width:110px;height:110px;left:3%;top:14%;animation-duration:19s"></span>
+  <span class="bubble" style="width:60px;height:60px;left:84%;top:9%;animation-duration:15s;animation-delay:-3s"></span>
+  <span class="bubble" style="width:170px;height:170px;left:89%;top:56%;animation-duration:24s;animation-delay:-8s"></span>
+  <span class="bubble" style="width:44px;height:44px;left:8%;top:66%;animation-duration:13s;animation-delay:-2s"></span>
+  <span class="bubble" style="width:84px;height:84px;left:72%;top:84%;animation-duration:21s;animation-delay:-10s"></span>
+  <span class="bubble" style="width:32px;height:32px;left:54%;top:5%;animation-duration:11s;animation-delay:-5s"></span>
+</div>
+
+<main class="win">
+  <div class="titlebar">
+    <span class="dot"></span>
+    <span class="name">C:\RECRUITERS\romanenko_resume_2026.exe</span>
+    <div class="lang-sw" role="group" aria-label="Language">
+      <button type="button" data-lang="ru" aria-pressed="true">RU</button>
+      <button type="button" data-lang="en" aria-pressed="false">EN</button>
+      <button type="button" data-lang="de" aria-pressed="false">DE</button>
+    </div>
+    <span class="win-btns" aria-hidden="true"><i></i><i></i><i class="close"></i></span>
+  </div>
+
+  <div class="win-body">
+
+    <nav class="nav" aria-label="Разделы резюме">
+      <a href="#about" data-i18n="nav.about">// обо мне</a>
+      <a href="#numbers" data-i18n="nav.numbers">// цифры</a>
+      <a href="#exp" data-i18n="nav.exp">// опыт</a>
+      <a href="#stack" data-i18n="nav.stack">// стек</a>
+      <a href="#edu" data-i18n="nav.edu">// образование</a>
+    </nav>
+
+    <header class="hero">
+      <div class="orb" id="orb" aria-hidden="true" style="cursor:pointer;transition:transform .18s ease;-webkit-tap-highlight-color:transparent" data-i18n="hero.initials">ГР</div>
+      <div style="flex:1;min-width:230px">
+        <h1 data-i18n="hero.name">Романенко Григорий</h1>
+        <p class="role" data-i18n="hero.role">Старший инженер по обеспечению качества <span>· QA Engineer · Т-Банк</span></p>
+        <div class="chips">
+          <a class="chip" href="https://t.me/Soundw4v35u7f37" target="_blank" rel="noopener noreferrer">✉ <b>@Soundw4v35u7f37</b></a>
+          <button class="chip" type="button" id="copyTg" data-i18n="hero.copy">⧉ копировать</button>
+          <span class="chip" data-i18n="hero.loc">📍 Санкт-Петербург · офис / удалёнка</span>
+          <span class="chip" data-i18n="hero.years">🕓 3+ года в QA</span>
+          <span class="chip" data-i18n="hero.en">🇬🇧 Английский B2</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="term">
+      <div class="term-head"><span class="dot"></span><span data-i18n="term.head">C:\g.romanenko\ — командная строка</span></div>
+      <div class="term-body" id="termBody">
+        <div class="t-line"><span class="p">C:\g.romanenko&gt;</span><span class="t-cmd"> whoami</span></div>
+        <div class="t-line t-out"><span class="out" data-i18n="term.out1">QA Engineer · Shift-left · держатель практики «Тестовая пирамида» в Т-Банке</span></div>
+        <div class="t-line"><span class="p">C:\g.romanenko&gt;</span><span class="t-cmd"> status --prod</span></div>
+        <div class="t-line t-out"><span class="out" data-i18n="term.out2">багов в бэклоге: <span class="warn">0</span> · регресс: <span class="warn">100% автоматизирован</span> · pipeline: <span class="warn">20 min</span></span></div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div>
+
+        <section id="about">
+          <h2><span class="ico"></span><span data-i18n="about.h">Коротко о главном</span></h2>
+          <div class="card">
+            <p data-i18n="about.p1">Отвечаю за качество продукта <strong>«Сфера бизнеса»</strong> в Т-Банке. Строю процесс так, чтобы баги не доходили до разработки, а не ловились на регрессе: <strong>Shift-left, Specification Review, Zero Bug Policy</strong>.</p>
+            <p data-i18n="about.p2">Держатель практики <strong>«Тестовая пирамида»</strong>: консультирую команды по внедрению — когда применять, как распределить тесты по пирамиде, как измерить импакт от внедрения на метриках. Провожу код-ревью автотестов, менторю QA и ращу людей — провёл стажёра до Junior+ за год.</p>
+          </div>
+        </section>
+
+        <section id="numbers">
+          <h2><span class="ico"></span><span data-i18n="num.h">Результаты в цифрах</span></h2>
+          <div class="metrics">
+            <button class="widget" type="button" aria-expanded="false">
+              <span class="num"><span data-count="50" data-prefix="−" data-suffix="%">−50%</span><span class="plus">+</span></span>
+              <span class="cap" data-i18n="m1.cap">время пайплайна: 40 → 20 минут за счёт перераспределения проверок по уровням пирамиды</span>
+              <span class="detail" data-i18n="m1.det">Было: 40 мин, регресс держался на E2E. Стало: 20 мин, большая часть проверок на модульном и интеграционном уровнях.</span>
+            </button>
+            <button class="widget" type="button" aria-expanded="false">
+              <span class="num"><span data-count="2" data-prefix="×">×2</span><span class="plus">+</span></span>
+              <span class="cap" data-i18n="m2.cap">меньше багов в продакшене после внедрения Shift-left-практик</span>
+              <span class="detail" data-i18n="m2.det">Результат связки: 3 Amigos, Specification Review и Zero Bug Policy в одной команде.</span>
+            </button>
+            <button class="widget" type="button" aria-expanded="false">
+              <span class="num"><span data-count="0">0</span><span class="plus">+</span></span>
+              <span class="cap" data-i18n="m3.cap">багов в бэклоге — держим Zero Bug Policy в команде</span>
+              <span class="detail" data-i18n="m3.det">Баг не живёт в бэклоге: либо чинится сразу, либо превращается в задачу с приоритетом.</span>
+            </button>
+            <button class="widget" type="button" aria-expanded="false">
+              <span class="num"><span data-count="4">4</span><span class="plus">+</span></span>
+              <span class="cap" data-i18n="m4.cap">QA заонбордил и менторил: 3 из смежных стримов + стажёр</span>
+              <span class="detail" data-i18n="m4.det">Стажёр выведен на Junior+ за 1 год; следующая ступень — мидл.</span>
+            </button>
+          </div>
+        </section>
+
+        <section id="exp">
+          <h2><span class="ico"></span><span data-i18n="exp.h">Опыт работы</span></h2>
+          <div class="job">
+            <div class="job-head">
+              <h3 data-i18n="exp.title">Т-Банк — Старший инженер по обеспечению качества</h3>
+              <span class="when" data-i18n="exp.when">авг 2023 — н. в.</span>
+            </div>
+            <p class="job-meta" data-i18n="exp.meta">Команда «Сфера бизнеса» · Санкт-Петербург</p>
+            <ul>
+              <li data-i18n="exp.l1"><b>Shift-left.</b> Организовал сессии «3 Amigos» (разработка, тестирование, аналитика) и Specification Review — возвраты ТЗ на доработку после старта разработки упали до <em>0–1 раза на фичу</em>.</li>
+              <li data-i18n="exp.l2"><b>Zero Bug Policy.</b> Внедрил и курировал практику в команде: бэклог багов отсутствует как класс. Вместе с остальными подходами — <em>×2 меньше багов в проде</em> и короче Time to Market.</li>
+              <li data-i18n="exp.l3"><b>Метрики.</b> Настроил сбор метрик качества и операционных метрик, на их основе находил узкие места, заводил задачи на устранение и отслеживал эффект.</li>
+              <li data-i18n="exp.l4"><b>Тестовая пирамида.</b> Держатель практики в Т-Банке: реорганизовал покрытие, перенёс большую часть проверок на модульный и интеграционный уровни — пайплайн <em>с 40 до 20 минут</em>.</li>
+              <li data-i18n="exp.l5"><b>Автоматизация.</b> Написал интеграционные и E2E-тесты, довёл регресс до полностью автоматизированного. Интеграция в GitLab CI/CD, выгрузка результатов в Allure.</li>
+              <li data-i18n="exp.l6"><b>Кросс-платформенное тестирование.</b> Chrome, Firefox, Safari; Web и Mobile — на постоянной основе для каждой новой фичи.</li>
+              <li data-i18n="exp.l7"><b>Качество кода тестов.</b> Код-ревью автотестов коллег: держим планку и вычищаем flaky и false negative.</li>
+              <li data-i18n="exp.l8"><b>Релизы и инциденты.</b> Участие в релизном процессе, пост-релизный мониторинг, разбор обращений пользователей — чтобы похожие инциденты не повторялись.</li>
+              <li data-i18n="exp.l9"><b>Люди.</b> Заонбордил 3 QA из смежных стримов, менторю стажёра: <em>вывел на Junior+ за 1 год</em>.</li>
+            </ul>
+          </div>
+        </section>
+
+        <section id="stack">
+          <h2><span class="ico"></span><span data-i18n="stack.h">Стек</span></h2>
+          <div class="stack-group">
+            <div class="lbl" data-i18n="stack.lang">Языки</div>
+            <div class="pills"><span class="pill">TypeScript</span><span class="pill">JavaScript</span><span class="pill">SQL</span></div>
+          </div>
+          <div class="stack-group">
+            <div class="lbl" data-i18n="stack.auto">Автоматизация и API</div>
+            <div class="pills"><span class="pill">Playwright</span><span class="pill">Jest</span><span class="pill">Postman</span><span class="pill">Swagger</span></div>
+          </div>
+          <div class="stack-group">
+            <div class="lbl" data-i18n="stack.ci">CI/CD и отчётность</div>
+            <div class="pills"><span class="pill">GitLab CI</span><span class="pill">Git</span><span class="pill">Allure Report</span></div>
+          </div>
+          <div class="stack-group">
+            <div class="lbl" data-i18n="stack.tools">Инструменты</div>
+            <div class="pills"><span class="pill">Charles Proxy</span><span class="pill">DevTools</span><span class="pill">Jira</span><span class="pill">Confluence</span><span class="pill">Figma</span><span class="pill">Storybook</span></div>
+          </div>
+        </section>
+
+      </div>
+
+      <aside>
+
+        <section id="edu">
+          <h2><span class="ico"></span><span data-i18n="edu.h">Образование</span></h2>
+          <div class="card">
+            <div class="edu">
+              <div class="deg" data-i18n="edu.m.deg">Магистр · Управление высокотехнологичным бизнесом</div>
+              <div class="where"><img class="uni-logo" src="itmo.png" alt="ИТМО"/><span data-i18n="edu.m.where">ИТМО, Факультет технологического менеджмента и инноваций</span></div>
+              <div class="yr" data-i18n="edu.m.yr">2028 · Санкт-Петербург</div>
+            </div>
+            <div class="edu">
+              <div class="deg" data-i18n="edu.b.deg">Бакалавр · Физика</div>
+              <div class="where"><img class="uni-logo" src="spbu_logo.png" alt="СПбГУ"/><span data-i18n="edu.b.where">СПбГУ, Физический факультет</span></div>
+              <div class="yr" data-i18n="edu.b.yr">2026 · Санкт-Петербург</div>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <h2><span class="ico"></span><span data-i18n="langs.h">Языки</span></h2>
+          <div class="card">
+            <div class="lang"><span data-i18n="langs.ru">Русский</span><span class="lvl" data-i18n="langs.native">родной</span></div>
+            <div class="lang"><span data-i18n="langs.en">Английский</span><span class="lvl">B2</span></div>
+            <div class="bar" aria-hidden="true"><i data-fill="72"></i></div>
+            <div class="lang" style="margin-top:10px"><span data-i18n="langs.de">Немецкий</span><span class="lvl">A2</span></div>
+            <div class="bar" aria-hidden="true"><i data-fill="35"></i></div>
+          </div>
+        </section>
+
+        <section>
+          <h2><span class="ico"></span><span data-i18n="how.h">Как я работаю</span></h2>
+          <div class="card">
+            <p data-i18n="how.p1">Высоко ценю <strong>командную работу и открытую коммуникацию</strong>. Коллеги отмечают проактивность, дружелюбие и умение создавать позитивную атмосферу.</p>
+            <p data-i18n="how.p2">Считаю, что Старший инженер должен <strong>защищать свою экспертизу</strong> в продуктовых решениях: качество складывается из суммы мелких технических решений.</p>
+            <p data-i18n="how.p3">Цель — <strong>лидерская роль в QA</strong>: вести направление, а не только продукт.</p>
+          </div>
+        </section>
+
+        <section>
+          <h2><span class="ico"></span><span data-i18n="off.h">Вне работы</span></h2>
+          <div class="card">
+            <p data-i18n="off.p">Велопрогулки, настольные игры, музыка — играю на гитаре.</p>
+          </div>
+        </section>
+
+      </aside>
+    </div>
+
+    <div class="foot">
+      <span data-i18n="foot.upd">обновлено: октябрь 2026</span>
+      <span class="hint" title="psst… в QA баги не прячутся от тех, кто ищет" data-i18n="foot.hint" data-i18n-attr="title:foot.hintTitle">↑↑↓↓←→←→BA · или 5× по аватару</span>
+    </div>
+
+  </div>
+</main>
+
+<nav class="taskbar" aria-label="Панель задач" data-i18n-attr="aria-label:tb.aria">
+  <span class="start"><span class="flag" aria-hidden="true"></span><span data-i18n="tb.start">Пуск</span></span>
+  <a class="tb-item tb-file" href="https://t.me/Soundw4v35u7f37" target="_blank" rel="noopener noreferrer">romanenko_resume.exe</a>
+  <button class="tb-item" type="button" id="crtBtn" aria-pressed="false" title="Включить CRT-эффект" data-i18n-attr="title:crt.titleOn">
+    <span class="led" aria-hidden="true"></span>CRT
+  </button>
+  <span class="clock" id="clock">--:--</span>
+</nav>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  'use strict';
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- reading progress ---------- */
+  var progress = document.getElementById('progress');
+  function onScroll() {
+    var doc = document.documentElement;
+    var max = doc.scrollHeight - doc.clientHeight;
+    var pct = max > 0 ? (doc.scrollTop / max) * 100 : 0;
+    progress.style.width = pct.toFixed(2) + '%';
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  /* ---------- mouse sheen ---------- */
+  var win = document.querySelector('.win');
+  if (win && !reduce && window.matchMedia('(hover: hover)').matches) {
+    win.addEventListener('mousemove', function (e) {
+      var r = win.getBoundingClientRect();
+      win.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+      win.style.setProperty('--my', (e.clientY - r.top) + 'px');
+    });
+  }
+
+  /* ---------- clock ---------- */
+  var clock = document.getElementById('clock');
+  var days = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб'];
+  function tick() {
+    var d = new Date();
+    clock.textContent = days[d.getDay()] + ' ' +
+      String(d.getHours()).padStart(2, '0') + ':' +
+      String(d.getMinutes()).padStart(2, '0');
+  }
+  tick();
+  setInterval(tick, 15000);
+
+  /* ---------- toast ---------- */
+  var toast = document.getElementById('toast');
+  var toastTimer;
+  function showToast(msg) {
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toast.classList.remove('show'); }, 2200);
+  }
+
+  function t(key) {
+    var lang = localStorage.getItem(I18N_KEY) || 'en';
+    var t = translations[lang] || translations.en;
+    return t[key] || translations.en[key] || key;
+  }
+
+  /* ---------- copy telegram ---------- */
+  var copyBtn = document.getElementById('copyTg');
+  var tg = '@Soundw4v35u7f37';
+  copyBtn.addEventListener('click', function () {
+    function done() { showToast(t('toast.copied') + tg); }
+    function fallback() {
+      var ta = document.createElement('textarea');
+      ta.value = tg;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.top = '-1000px';
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); done(); }
+      catch (e) { showToast(t('toast.failed') + tg); }
+      document.body.removeChild(ta);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(tg).then(done, fallback);
+    } else {
+      fallback();
+    }
+  });
+
+  /* ---------- terminal typewriter ---------- */
+  var termBody = document.getElementById('termBody');
+  if (termBody && !reduce) {
+    termBody.classList.add('term--js');
+    var lines = Array.prototype.slice.call(termBody.querySelectorAll('.t-line'));
+    var cmds = lines.map(function (l) { return l.querySelector('.t-cmd'); });
+
+    cmds.forEach(function (c) { if (c) { c.dataset.full = c.textContent; c.textContent = ''; } });
+
+    var caret = document.createElement('span');
+    caret.className = 'caret';
+    caret.setAttribute('aria-hidden', 'true');
+
+    var i = 0;
+    function typeLine() {
+      if (i >= lines.length) { caret.remove(); return; }
+      var line = lines[i];
+      var cmd = line.querySelector('.t-cmd');
+
+      if (cmd) {
+        cmd.after(caret);
+        var full = cmd.dataset.full;
+        var pos = 0;
+        (function step() {
+          if (pos >= full.length) {
+            i++;
+            setTimeout(typeLine, 260);
+            return;
+          }
+          cmd.textContent = full.slice(0, ++pos);
+          setTimeout(step, 18 + Math.random() * 26);
+        }());
+      } else if (line.classList.contains('t-out')) {
+        line.classList.add('show');
+        i++;
+        setTimeout(typeLine, 220);
+      } else {
+        i++;
+        typeLine();
+      }
+    }
+    setTimeout(typeLine, 320);
+  }
+
+  /* ---------- widget counters + expand ---------- */
+  var widgets = Array.prototype.slice.call(document.querySelectorAll('.widget'));
+
+  function countUp(el) {
+    var target = parseInt(el.dataset.count, 10);
+    if (isNaN(target)) return;
+    var prefix = el.dataset.prefix || '';
+    var suffix = el.dataset.suffix || '';
+    if (reduce || target === 0) { el.textContent = prefix + target + suffix; return; }
+    var start = performance.now();
+    var dur = 900;
+    function frame(now) {
+      var t = Math.min(1, (now - start) / dur);
+      var eased = 1 - Math.pow(1 - t, 3);
+      el.textContent = prefix + Math.round(target * eased) + suffix;
+      if (t < 1) requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  }
+
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        var el = entry.target;
+        io.unobserve(el);
+        countUp(el);
+      });
+    }, { threshold: 0.5 });
+    document.querySelectorAll('[data-count]').forEach(function (el) { io.observe(el); });
+
+    var bars = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        var el = entry.target;
+        bars.unobserve(el);
+        el.style.width = (el.dataset.fill || 0) + '%';
+      });
+    }, { threshold: 0.4 });
+    document.querySelectorAll('[data-fill]').forEach(function (el) { bars.observe(el); });
+  } else {
+    document.querySelectorAll('[data-count]').forEach(countUp);
+    document.querySelectorAll('[data-fill]').forEach(function (el) { el.style.width = (el.dataset.fill || 0) + '%'; });
+  }
+
+  widgets.forEach(function (w) {
+    w.addEventListener('click', function () {
+      var open = w.classList.toggle('open');
+      w.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+  });
+
+  /* ---------- CRT toggle (off by default, persisted) ---------- */
+  var crtBtn = document.getElementById('crtBtn');
+  var CRT_KEY = 'resume.crt';
+  function setCrt(on) {
+    document.body.classList.toggle('no-crt', !on);
+    crtBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    crtBtn.title = on ? 'Выключить CRT-эффект' : 'Включить CRT-эффект';
+    try { localStorage.setItem(CRT_KEY, on ? '1' : '0'); } catch (e) {}
+  }
+  var savedCrt = null;
+  try { savedCrt = localStorage.getItem(CRT_KEY); } catch (e) {}
+  if (savedCrt === '1') setCrt(true);
+  else setCrt(false);
+  crtBtn.addEventListener('click', function () {
+    var turnOn = document.body.classList.contains('no-crt');
+    setCrt(turnOn);
+  });
+
+  function degauss() {
+    if (reduce) return;
+    document.body.classList.add('degauss');
+  }
+
+  /* ---------- easter egg: bug hunt ----------
+     Triggers: Konami code, typing "qa"/"bug", or 5 quick taps on the avatar. */
+  var layer = document.getElementById('bugLayer');
+  var hud = document.getElementById('hud');
+  var hudCount = document.getElementById('hudCount');
+  var hudTotal = document.getElementById('hudTotal');
+  var hudTime = document.getElementById('hudTime');
+  var modal = document.getElementById('eggModal');
+  var eggBody = document.getElementById('eggBody');
+  var BEST_KEY = 'resume.bugBest';
+  var BUG_ICONS = ['🐞', '🐛', '🪲', '🦗', '🐜'];
+  var BUG_NAMES = ['flaky test', 'NPE in production', 'race condition', 'off-by-one', 'false negative',
+    'CSS in Safari', 'timezone', 'cache', 'N+1'];
+
+  var game = null;
+
+  function startGame() {
+    if (game) return;
+    closeModal();
+    degauss();
+    var total = window.innerWidth < 560 ? 8 : 12;
+    game = { bugs: [], caught: 0, total: total, start: performance.now(), raf: 0, timer: 0 };
+    hudCount.textContent = '0';
+    hudTotal.textContent = String(total);
+    hudTime.textContent = '0.0';
+    hud.classList.add('show');
+    showToast(t('toast.gameStart'));
+
+    for (var n = 0; n < total; n++) spawnBug(n);
+    game.raf = requestAnimationFrame(loop);
+    game.timer = setInterval(function () {
+      hudTime.textContent = ((performance.now() - game.start) / 1000).toFixed(1);
+    }, 100);
+  }
+
+  function spawnBug(n) {
+    var w = window.innerWidth, h = window.innerHeight;
+    var el = document.createElement('button');
+    el.type = 'button';
+    el.className = 'bug';
+    el.textContent = BUG_ICONS[n % BUG_ICONS.length];
+    el.setAttribute('aria-label', 'Bug: ' + BUG_NAMES[n % BUG_NAMES.length]);
+    var speed = (reduce ? 0.4 : 1) * (1.1 + Math.random() * 1.6) * (w < 560 ? 0.8 : 1);
+    var ang = Math.random() * Math.PI * 2;
+    var bug = {
+      el: el,
+      x: 40 + Math.random() * (w - 80),
+      y: 60 + Math.random() * (h - 160),
+      vx: Math.cos(ang) * speed,
+      vy: Math.sin(ang) * speed,
+      wobble: Math.random() * 6.28,
+      alive: true
+    };
+    el.addEventListener('pointerdown', function (e) { e.preventDefault(); catchBug(bug); });
+    el.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); catchBug(bug); }
+    });
+    layer.appendChild(el);
+    game.bugs.push(bug);
+  }
+
+  function loop() {
+    if (!game) return;
+    var w = window.innerWidth, h = window.innerHeight - 50;
+    game.bugs.forEach(function (b) {
+      if (!b.alive) return;
+      b.wobble += 0.08;
+      if (Math.random() < 0.012) {
+        var a = Math.atan2(b.vy, b.vx) + (Math.random() - 0.5) * 2.2;
+        var s = Math.hypot(b.vx, b.vy);
+        b.vx = Math.cos(a) * s; b.vy = Math.sin(a) * s;
+      }
+      b.x += b.vx + Math.cos(b.wobble) * 0.4;
+      b.y += b.vy + Math.sin(b.wobble) * 0.4;
+      if (b.x < 22 || b.x > w - 22) { b.vx *= -1; b.x = Math.max(22, Math.min(w - 22, b.x)); }
+      if (b.y < 22 || b.y > h - 22) { b.vy *= -1; b.y = Math.max(22, Math.min(h - 22, b.y)); }
+      var rot = Math.atan2(b.vy, b.vx) * 180 / Math.PI + 90;
+      b.el.style.transform = 'translate(' + b.x.toFixed(1) + 'px,' + b.y.toFixed(1) + 'px) rotate(' + rot.toFixed(0) + 'deg)';
+    });
+    game.raf = requestAnimationFrame(loop);
+  }
+
+  function catchBug(b) {
+    if (!game || !b.alive) return;
+    b.alive = false;
+    b.el.classList.add('squash');
+    var splat = document.createElement('span');
+    splat.className = 'splat';
+    splat.style.left = b.x + 'px';
+    splat.style.top = b.y + 'px';
+    layer.appendChild(splat);
+    setTimeout(function () { splat.remove(); b.el.remove(); }, 520);
+    if (navigator.vibrate) { try { navigator.vibrate(18); } catch (e) {} }
+
+    game.caught++;
+    hudCount.textContent = String(game.caught);
+    if (game.caught >= game.total) finishGame(true);
+  }
+
+  function stopGame() {
+    if (!game) return;
+    cancelAnimationFrame(game.raf);
+    clearInterval(game.timer);
+    layer.innerHTML = '';
+    hud.classList.remove('show');
+    var g = game;
+    game = null;
+    return g;
+  }
+
+  function finishGame(won) {
+    var g = stopGame();
+    if (!g || !won) return;
+    var secs = (performance.now() - g.start) / 1000;
+    var best = null;
+    try { best = parseFloat(localStorage.getItem(BEST_KEY)); } catch (e) {}
+    var record = !best || secs < best;
+    if (record) { try { localStorage.setItem(BEST_KEY, secs.toFixed(2)); } catch (e) {} }
+
+    var t = translations[localStorage.getItem(I18N_KEY) || 'ru'] || translations.ru;
+    var verdictKey = secs < 8 ? 'game.v.fast' : secs < 15 ? 'game.v.good' : 'game.v.slow';
+    var verdict = t[verdictKey] || translations.ru[verdictKey];
+
+    eggBody.innerHTML =
+      '<div><span class="p" style="color:#ff8a2b">C:\\g.romanenko&gt;</span> npm run test:regression</div>' +
+      '<div class="out">PASS  resume.spec.ts (' + g.total + ' tests)</div>' +
+      '<div class="ok">✓ ' + g.total + ' passed · 0 failed · 0 flaky</div>' +
+      '<div class="big" id="eggTitle">BUG BACKLOG: 0</div>' +
+      '<div class="out">' + (t['game.time'] || 'время:') + ' <b style="color:#ffd98a">' + secs.toFixed(2) + 's</b>' +
+        (record ? ' · <span class="ok">' + (t['game.newRecord'] || 'новый рекорд!') + '</span>' : ' · ' + (t['game.record'] || 'рекорд:') + ' ' + best.toFixed(2) + 's') + '</div>' +
+      '<div class="out" style="margin-top:6px">' + verdict + '</div>' +
+      '<div class="out" style="margin-top:10px;opacity:.85">' + (t['game.cta'] || 'Вы только что сделали то, чем я занимаюсь каждый день. Давайте делать это вместе?') + '</div>' +
+      '<div class="egg-actions">' +
+        '<a class="primary" href="https://t.me/Soundw4v35u7f37" target="_blank" rel="noopener noreferrer">✉ ' + (t['game.writeTg'] || 'Написать в Telegram') + '</a>' +
+        '<button type="button" id="eggAgain">↻ ' + (t['game.retry'] || 'Ещё раз') + '</button>' +
+      '</div>';
+    document.getElementById('eggAgain').addEventListener('click', startGame);
+    openModal();
+  }
+
+  function openModal() {
+    modal.classList.add('show');
+    document.getElementById('eggClose').focus();
+  }
+  function closeModal() { modal.classList.remove('show'); }
+
+  document.getElementById('eggClose').addEventListener('click', closeModal);
+  document.getElementById('hudQuit').addEventListener('click', function () {
+    stopGame();
+    showToast(t('toast.gameQuit'));
+  });
+
+  var KONAMI = ['arrowup', 'arrowup', 'arrowdown', 'arrowdown', 'arrowleft', 'arrowright', 'arrowleft', 'arrowright', 'b', 'a'];
+  var keyBuf = [];
+  var typed = '';
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+      if (modal.classList.contains('show')) { closeModal(); return; }
+      if (game) { stopGame(); return; }
+    }
+    var t = e.target;
+    if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+
+    var k = (e.key || '').toLowerCase();
+    keyBuf.push(k);
+    if (keyBuf.length > KONAMI.length) keyBuf.shift();
+    if (keyBuf.join(',') === KONAMI.join(',')) { keyBuf = []; startGame(); return; }
+
+    if (k.length === 1) {
+      typed = (typed + k).slice(-6);
+      if (/(?:qa|bug|баг)$/.test(typed)) { typed = ''; startGame(); }
+    }
+  });
+
+  var orb = document.getElementById('orb');
+  var taps = 0, tapTimer;
+  orb.addEventListener('click', function () {
+    taps++;
+    orb.style.transform = 'scale(' + (1 + taps * 0.04) + ') rotate(' + (taps * 8) + 'deg)';
+    clearTimeout(tapTimer);
+    tapTimer = setTimeout(function () { taps = 0; orb.style.transform = ''; }, 900);
+    if (taps >= 5) {
+      taps = 0;
+      orb.style.transform = '';
+      startGame();
+    }
+  });
+
+  window.addEventListener('resize', function () {
+    if (!game) return;
+    var w = window.innerWidth, h = window.innerHeight - 50;
+    game.bugs.forEach(function (b) {
+      b.x = Math.min(b.x, w - 22);
+      b.y = Math.min(b.y, h - 22);
+    });
+  });
+
+  if (window.console && console.log) {
+    console.log('%c🐞 Ну привет!).', 'color:#ff8a2b;font:700 14px monospace');
+    console.log('%cПопробуйте Konami-код (↑↑↓↓←→←→BA), напечатайте "qa" или тапните 5 раз по аватару.', 'color:#ffcf9e;font:12px monospace');
+  }
+
+  /* ---------- i18n: Russian (default), English, German ---------- */
+  var I18N_KEY = 'resume.lang';
+
+  function getLangFromQuery() {
+    var m = window.location.search.match(/[?&]lang=([a-z]{2})/);
+    return m ? m[1] : null;
+  }
+
+  function setLangInQuery(lang) {
+    var url = new URL(window.location);
+    if (lang && lang !== 'en') {
+      url.searchParams.set('lang', lang);
+    } else {
+      url.searchParams.delete('lang');
+    }
+    window.history.replaceState({}, '', url);
+  }
+
+  var translations = {
+    ru: {
+      'nav.about': '// обо мне', 'nav.numbers': '// цифры', 'nav.exp': '// опыт', 'nav.stack': '// стек', 'nav.edu': '// образование',
+      'hero.initials': 'ГР', 'hero.name': 'Романенко Григорий', 'hero.role': 'Старший инженер по&nbsp;обеспечению&nbsp;качества <span>· QA&nbsp;Engineer · Т-Банк</span>',
+      'hero.copy': '⧉ копировать', 'hero.loc': '📍 Санкт-Петербург · офис / удалёнка', 'hero.years': '🕓 3+ года в QA', 'hero.en': '🇬🇧 Английский B2',
+      'term.head': 'C:\\g.romanenko\\ — командная строка',
+      'term.out1': 'QA&nbsp;Engineer · Shift-left · держатель практики «Тестовая пирамида» в Т-Банке',
+      'term.out2': 'багов в бэклоге: <span class="warn">0</span> · регресс: <span class="warn">100% автоматизирован</span> · pipeline: <span class="warn">20&nbsp;min</span>',
+      'about.h': 'Коротко о главном',
+      'about.p1': 'Отвечаю за качество продукта <strong>«Сфера бизнеса»</strong> в Т-Банке. Строю процесс так, чтобы баги не доходили до разработки, а не ловились на регрессе: <strong>Shift-left, Specification Review, Zero Bug Policy</strong>.',
+      'about.p2': 'Держатель практики <strong>«Тестовая пирамида»</strong>: консультирую команды по внедрению — когда применять, как распределить тесты по пирамиде, как измерить импакт от внедрения на метриках. Провожу код-ревью автотестов, менторю QA и ращу людей — провёл стажёра до Junior+ за год.',
+      'num.h': 'Результаты в цифрах',
+      'm1.cap': 'время пайплайна: 40 → 20 минут за счёт перераспределения проверок по уровням пирамиды',
+      'm1.det': 'Было: 40 мин, регресс держался на E2E. Стало: 20 мин, большая часть проверок на модульном и интеграционном уровнях.',
+      'm2.cap': 'меньше багов в продакшене после внедрения Shift-left-практик',
+      'm2.det': 'Результат связки: 3&nbsp;Amigos, Specification Review и&nbsp;Zero Bug Policy в&nbsp;одной команде.',
+      'm3.cap': 'багов в&nbsp;бэклоге — держим Zero Bug Policy в&nbsp;команде',
+      'm3.det': 'Баг не&nbsp;живёт в&nbsp;бэклоге: либо чинится сразу, либо превращается в&nbsp;задачу с&nbsp;приоритетом.',
+      'm4.cap': 'QA заонбордил и&nbsp;менторил: 3&nbsp;из смежных стримов + стажёр',
+      'm4.det': 'Стажёр выведен на&nbsp;Junior+ за&nbsp;1&nbsp;год; следующая ступень — мидл.',
+      'exp.h': 'Опыт работы', 'exp.title': 'Т-Банк — Старший инженер по&nbsp;обеспечению качества', 'exp.when': 'авг&nbsp;2023 — н.&nbsp;в.', 'exp.meta': 'Команда «Счета и&nbsp;карты» · Санкт-Петербург',
+      'exp.l1': '<b>Shift-left.</b> Организовал сессии «3&nbsp;Amigos» (разработка, тестирование, аналитика) и&nbsp;Specification Review — возвраты ТЗ на&nbsp;доработку после старта разработки упали до <em>0–1&nbsp;раза на&nbsp;фичу</em>.',
+      'exp.l2': '<b>Zero Bug Policy.</b> Внедрил и&nbsp;курировал практику в&nbsp;команде: бэклог багов отсутствует как класс. Вместе с&nbsp;остальными подходами — <em>×2&nbsp;меньше багов в&nbsp;проде</em> и&nbsp;короче Time to Market.',
+      'exp.l3': '<b>Метрики.</b> Настроил сбор метрик качества и&nbsp;операционных метрик, на&nbsp;их основе находил узкие места, заводил задачи на&nbsp;устранение и&nbsp;отслеживал эффект.',
+      'exp.l4': '<b>Тестовая пирамида.</b> Держатель практики в&nbsp;Т-Банке: реорганизовал покрытие, перенёс большую часть проверок на&nbsp;модульный и&nbsp;интеграционный уровни — пайплайн <em>с&nbsp;40 до&nbsp;20&nbsp;минут</em>.',
+      'exp.l5': '<b>Автоматизация.</b> Написал интеграционные и&nbsp;E2E-тесты, довёл регресс до&nbsp;полностью автоматизированного. Интеграция в&nbsp;GitLab CI/CD, выгрузка результатов в&nbsp;Allure.',
+      'exp.l6': '<b>Кросс-платформенное тестирование.</b> Chrome, Firefox, Safari; Web и&nbsp;Mobile — на&nbsp;постоянной основе для каждой новой фичи.',
+      'exp.l7': '<b>Качество кода тестов.</b> Код-ревью автотестов коллег: держим планку и&nbsp;вычищаем flaky и&nbsp;false negative.',
+      'exp.l8': '<b>Релизы и&nbsp;инциденты.</b> Участие в&nbsp;релизном процессе, пост-релизный мониторинг, разбор обращений пользователей — чтобы похожие инциденты не&nbsp;повторялись.',
+      'exp.l9': '<b>Люди.</b> Заонбордил 3&nbsp;QA из&nbsp;смежных стримов, менторю стажёра: <em>вывел на&nbsp;Junior+ за&nbsp;1&nbsp;год</em>.',
+      'stack.h': 'Стек', 'stack.lang': 'Языки', 'stack.auto': 'Автоматизация и&nbsp;API', 'stack.ci': 'CI/CD и&nbsp;отчётность', 'stack.tools': 'Инструменты',
+      'edu.h': 'Образование', 'edu.m.deg': 'Магистр · Управление высокотехнологичным бизнесом', 'edu.m.where': 'ИТМО, Факультет технологического менеджмента и&nbsp;инноваций', 'edu.m.yr': '2028 · Санкт-Петербург',
+      'edu.b.deg': 'Бакалавр · Физика', 'edu.b.where': 'СПбГУ, Физический факультет', 'edu.b.yr': '2026 · Санкт-Петербург',
+      'langs.h': 'Языки', 'langs.ru': 'Русский', 'langs.native': 'родной', 'langs.en': 'Английский', 'langs.de': 'Немецкий',
+      'how.h': 'Как я&nbsp;работаю',
+      'how.p1': 'Высоко ценю <strong>командную работу и&nbsp;открытую коммуникацию</strong>. Коллеги отмечают проактивность, дружелюбие и&nbsp;умение создавать позитивную атмосферу.',
+      'how.p2': 'Считаю, что Старший инженер должен <strong>защищать свою экспертизу</strong> в&nbsp;продуктовых решениях: качество складывается из&nbsp;суммы мелких технических решений.',
+      'how.p3': 'Цель — <strong>лидерская роль в&nbsp;QA</strong>: вести направление, а&nbsp;не только продукт.',
+      'off.h': 'Вне работы', 'off.p': 'Велопрогулки, настольные игры, музыка — играю на&nbsp;гитаре.',
+      'foot.upd': 'обновлено: октябрь&nbsp;2026',
+      'foot.hint': '↑↑↓↓←→←→BA · или 5×&nbsp;по аватару', 'foot.hintTitle': 'psst… в&nbsp;QA баги не&nbsp;прячутся от&nbsp;тех, кто ищет',
+      'tb.aria': 'Панель задач', 'tb.start': 'Пуск',
+      'crt.titleOff': 'Выключить CRT-эффект', 'crt.titleOn': 'Включить CRT-эффект',
+      'hud.caught': 'пойманы:', 'egg.close': 'Закрыть',
+      'game.v.fast': 'Senior-уровень реакции. Регресс бы&nbsp;не понадобился.',
+      'game.v.good': 'Отличный результат — Zero Bug Policy соблюдена.',
+      'game.v.slow': 'Все баги пойманы. Медленно, но&nbsp;до прода не&nbsp;дошло ни&nbsp;одного.',
+      'game.time': 'время:', 'game.record': 'рекорд:', 'game.newRecord': 'новый рекорд!',
+      'game.cta': 'Вы только что сделали то, чем я&nbsp;занимаюсь каждый день. Давайте делать это вместе?',
+      'game.writeTg': 'Написать в&nbsp;Telegram', 'game.retry': 'Ещё раз',
+      'toast.copied': 'скопировано: ', 'toast.failed': 'не удалось скопировать: ',
+      'toast.gameStart': '🐞 в резюме пролезли баги — лови их!', 'toast.gameQuit': 'баги ушли в бэклог… шучу, бэклога у нас нет 😉'
+    },
+    en: {
+      'nav.about': '// about', 'nav.numbers': '// metrics', 'nav.exp': '// experience', 'nav.stack': '// stack', 'nav.edu': '// education',
+      'hero.initials': 'GR', 'hero.name': 'Grigoriy Romanenko', 'hero.role': 'Senior QA Engineer <span>· QA Engineer · T-Bank</span>',
+      'hero.copy': '⧉ copy', 'hero.loc': '📍 Saint Petersburg · hybrid / remote', 'hero.years': '🕓 3+ years in QA', 'hero.en': '🇬🇧 English B2',
+      'term.head': 'C:\\g.romanenko\\ — command prompt',
+      'term.out1': 'QA Engineer · Shift-left · owner of the "Test Pyramid" practice at T-Bank',
+      'term.out2': 'backlog bugs: <span class="warn">0</span> · regression: <span class="warn">100% automated</span> · pipeline: <span class="warn">20&nbsp;min</span>',
+      'about.h': 'About',
+      'about.p1': 'I own product quality for <strong>"Business Sphere"</strong> at T-Bank. I build the process so bugs never reach development instead of being caught on regression: <strong>Shift-left, Specification Review, Zero Bug Policy</strong>.',
+      'about.p2': 'Owner of the <strong>"Test Pyramid"</strong> practice: I consult teams on implementation — when to apply, how to distribute tests across the pyramid, how to measure impact on metrics. I conduct autotest code reviews, mentor QA and grow people — brought an intern to Junior+ in one year.',
+      'num.h': 'Metrics',
+      'm1.cap': 'pipeline time: 40 → 20&nbsp;minutes by redistributing checks across pyramid levels',
+      'm1.det': 'Was: 40&nbsp;min, regression relied on E2E. Now: 20&nbsp;min, most checks at unit and integration levels.',
+      'm2.cap': 'fewer bugs in production after introducing Shift-left practices',
+      'm2.det': 'Result of: 3&nbsp;Amigos, Specification Review and Zero Bug Policy in one team.',
+      'm3.cap': 'bugs in backlog — we maintain Zero Bug Policy in the team',
+      'm3.det': 'A bug doesn\'t live in the backlog: either fixed immediately or becomes a prioritized task.',
+      'm4.cap': 'QAs onboarded and mentored: 3 from adjacent streams + intern',
+      'm4.det': 'Intern promoted to Junior+ in 1&nbsp;year; next step — Middle.',
+      'exp.h': 'Experience', 'exp.title': 'T-Bank — Senior QA Engineer', 'exp.when': 'Aug&nbsp;2023 — present', 'exp.meta': '"Business Sphere" team · Saint Petersburg',
+      'exp.l1': '<b>Shift-left.</b> Organized "3&nbsp;Amigos" sessions (dev, QA, analytics) and Specification Review — requirements rework after development start dropped to <em>0–1&nbsp;times per feature</em>.',
+      'exp.l2': '<b>Zero Bug Policy.</b> Introduced and maintained the practice in the team: bug backlog is non-existent. Together with other approaches — <em>×2 fewer bugs in prod</em> and shorter Time to Market.',
+      'exp.l3': '<b>Metrics.</b> Set up quality and operational metrics collection, identified bottlenecks, created tasks to fix them and tracked impact.',
+      'exp.l4': '<b>Test Pyramid.</b> Practice owner at T-Bank: reorganized coverage, moved most checks to unit and integration levels — pipeline <em>from 40 to&nbsp;20&nbsp;minutes</em>.',
+      'exp.l5': '<b>Automation.</b> Wrote integration and E2E tests, made regression fully automated. Integrated into GitLab CI/CD, results exported to Allure.',
+      'exp.l6': '<b>Cross-platform testing.</b> Chrome, Firefox, Safari; Web and Mobile — continuously for every new feature.',
+      'exp.l7': '<b>Test code quality.</b> Code review of colleagues\' autotests: we keep the bar high and eliminate flaky and false negatives.',
+      'exp.l8': '<b>Releases &amp; incidents.</b> Participated in release process, post-release monitoring, user issue analysis — to prevent similar incidents.',
+      'exp.l9': '<b>People.</b> Onboarded 3 QAs from adjacent streams, mentoring an intern: <em>promoted to Junior+ in 1&nbsp;year</em>.',
+      'stack.h': 'Tech Stack', 'stack.lang': 'Languages', 'stack.auto': 'Automation &amp; API', 'stack.ci': 'CI/CD &amp; Reporting', 'stack.tools': 'Tools',
+      'edu.h': 'Education', 'edu.m.deg': 'Master · High-Tech Business Management', 'edu.m.where': 'ITMO University, Faculty of Technological Management and Innovation', 'edu.m.yr': '2028 · Saint Petersburg',
+      'edu.b.deg': 'Bachelor · Physics', 'edu.b.where': 'Saint Petersburg State University, Faculty of Physics', 'edu.b.yr': '2026 · Saint Petersburg',
+      'langs.h': 'Languages', 'langs.ru': 'Russian', 'langs.native': 'native', 'langs.en': 'English', 'langs.de': 'German',
+      'how.h': 'How I&nbsp;Work',
+      'how.p1': 'I highly value <strong>teamwork and open communication</strong>. Colleagues note my proactivity, friendliness and ability to create a positive atmosphere.',
+      'how.p2': 'I believe a Senior Engineer should <strong>defend their expertise</strong> in product decisions: quality is the sum of small technical decisions.',
+      'how.p3': 'Goal — <strong>leadership role in QA</strong>: lead the direction, not just the product.',
+      'off.h': 'Outside Work', 'off.p': 'Cycling, board games, music — I play guitar.',
+      'foot.upd': 'updated: October&nbsp;2026',
+      'foot.hint': '↑↑↓↓←→←→BA · or 5×&nbsp;on avatar', 'foot.hintTitle': 'psst… in QA bugs don\'t hide from those who look',
+      'tb.aria': 'Taskbar', 'tb.start': 'Start',
+      'crt.titleOff': 'Disable CRT effect', 'crt.titleOn': 'Enable CRT effect',
+      'hud.caught': 'caught:', 'egg.close': 'Close',
+      'game.v.fast': 'Senior-level reflexes. Regression wouldn\'t be needed.',
+      'game.v.good': 'Great result — Zero Bug Policy maintained.',
+      'game.v.slow': 'All bugs caught. Slow, but none reached production.',
+      'game.time': 'time:', 'game.record': 'record:', 'game.newRecord': 'new record!',
+      'game.cta': 'You just did what I do every day. Let\'s do it together?',
+      'game.writeTg': 'Write on Telegram', 'game.retry': 'Retry',
+      'toast.copied': 'copied: ', 'toast.failed': 'failed to copy: ',
+      'toast.gameStart': '🐞 bugs snuck into the resume — catch them!', 'toast.gameQuit': 'bugs went to backlog… just kidding, we don\'t have one 😉'
+    },
+    de: {
+      'nav.about': '// über mich', 'nav.numbers': '// Kennzahlen', 'nav.exp': '// Erfahrung', 'nav.stack': '// Stack', 'nav.edu': '// Ausbildung',
+      'hero.initials': 'GR', 'hero.name': 'Grigoriy Romanenko', 'hero.role': 'Senior QA Engineer <span>· QA Engineer · T-Bank</span>',
+      'hero.copy': '⧉ kopieren', 'hero.loc': '📍 Sankt Petersburg · Hybrid / Remote', 'hero.years': '🕓 3+ Jahre im QA', 'hero.en': '🇬🇧 Englisch B2',
+      'term.head': 'C:\\g.romanenko\\ — Eingabeaufforderung',
+      'term.out1': 'QA Engineer · Shift-left · Inhaber der "Test Pyramid"-Praxis bei T-Bank',
+      'term.out2': 'Backlog-Bugs: <span class="warn">0</span> · Regression: <span class="warn">100% automatisiert</span> · Pipeline: <span class="warn">20&nbsp;min</span>',
+      'about.h': 'Über mich',
+      'about.p1': 'Ich verantworte die Produktqualität von <strong>"Business Sphere"</strong> bei T-Bank. Ich gestalte den Prozess so, dass Bugs nie die Entwicklung erreichen, statt erst bei der Regression gefunden zu werden: <strong>Shift-left, Specification Review, Zero Bug Policy</strong>.',
+      'about.p2': 'Inhaber der <strong>"Test Pyramid"</strong>-Praxis: Ich berate Teams bei der Implementierung — wann anwenden, wie Tests über die Pyramide verteilen, wie Impact auf Metriken messen. Ich führe Autotest-Code-Reviews durch, mentore QA und entwickle Menschen weiter — habe einen Praktikanten in einem Jahr zu Junior+ gebracht.',
+      'num.h': 'Kennzahlen',
+      'm1.cap': 'Pipeline-Zeit: 40 → 20&nbsp;Minuten durch Umverteilung der Checks über Pyramidenebenen',
+      'm1.det': 'Vorher: 40&nbsp;Min, Regression basierte auf E2E. Jetzt: 20&nbsp;Min, meeste Checks auf Unit- und Integrationsebene.',
+      'm2.cap': 'weniger Bugs in Production nach Einführung von Shift-left-Praktiken',
+      'm2.det': 'Ergebnis aus: 3&nbsp;Amigos, Specification Review und Zero Bug Policy in einem Team.',
+      'm3.cap': 'Bugs im Backlog — wir pflegen Zero Bug Policy im Team',
+      'm3.det': 'Ein Bug lebt nicht im Backlog: entweder sofort behoben oder wird zur priorisierten Aufgabe.',
+      'm4.cap': 'QAs onboarded und mentoriert: 3 aus benachbarten Streams + Praktikant',
+      'm4.det': 'Praktikant in 1&nbsp;Jahr zu Junior+ befördert; nächster Schritt — Middle.',
+      'exp.h': 'Berufserfahrung', 'exp.title': 'T-Bank — Senior QA Engineer', 'exp.when': 'Aug&nbsp;2023 — heute', 'exp.meta': 'Team "Business Sphere" · Sankt Petersburg',
+      'exp.l1': '<b>Shift-left.</b> Organisierte "3&nbsp;Amigos"-Sessions (Dev, QA, Analytics) und Specification Review — Anforderungen-Nacharbeit nach Entwicklungsstart sank auf <em>0–1&nbsp;Mal pro Feature</em>.',
+      'exp.l2': '<b>Zero Bug Policy.</b> Eingeführt und im Team gepflegt: Bug-Backlog existiert nicht. Zusammen mit anderen Ansätzen — <em>×2 weniger Bugs in Prod</em> und kürzere Time to Market.',
+      'exp.l3': '<b>Metriken.</b> Qualitäts- und Betriebsmetriken eingerichtet, Engpässe identifiziert, Aufgaben zur Behebung erstellt und Wirkung verfolgt.',
+      'exp.l4': '<b>Testpyramide.</b> Praxisinhaber bei T-Bank: Coverage neu organisiert, meeste Checks auf Unit- und Integrationsebene verlagert — Pipeline <em>von 40 auf 20&nbsp;Minuten</em>.',
+      'exp.l5': '<b>Automatisierung.</b> Integrations- und E2E-Tests geschrieben, Regression vollständig automatisiert. In GitLab CI/CD integriert, Ergebnisse in Allure exportiert.',
+      'exp.l6': '<b>Cross-Platform-Testing.</b> Chrome, Firefox, Safari; Web und Mobile — kontinuierlich für jedes neue Feature.',
+      'exp.l7': '<b>Testcode-Qualität.</b> Code-Review von Autotests der Kollegen: Wir halten die Latte hoch und eliminieren flaky und false negative.',
+      'exp.l8': '<b>Releases &amp; Incidents.</b> Teilnahme am Release-Prozess, Post-Release-Monitoring, User-Issue-Analyse — um ähnliche Incidents zu verhindern.',
+      'exp.l9': '<b>Menschen.</b> 3 QAs aus benachbarten Streams onboarded, Praktikant mentoriert: <em>in 1&nbsp;Jahr zu Junior+ befördert</em>.',
+      'stack.h': 'Tech-Stack', 'stack.lang': 'Sprachen', 'stack.auto': 'Automatisierung &amp; API', 'stack.ci': 'CI/CD &amp; Reporting', 'stack.tools': 'Tools',
+      'edu.h': 'Ausbildung', 'edu.m.deg': 'Master · High-Tech Business Management', 'edu.m.where': 'ITMO-Universität, Fakultät für Technologiemanagement und Innovation', 'edu.m.yr': '2028 · Sankt Petersburg',
+      'edu.b.deg': 'Bachelor · Physik', 'edu.b.where': 'Staatliche Universität Sankt Petersburg, Fakultät für Physik', 'edu.b.yr': '2026 · Sankt Petersburg',
+      'langs.h': 'Sprachen', 'langs.ru': 'Russisch', 'langs.native': 'Muttersprache', 'langs.en': 'Englisch', 'langs.de': 'Deutsch',
+      'how.h': 'Arbeitsweise',
+      'how.p1': 'Ich schätze <strong>Teamarbeit und offene Kommunikation</strong> sehr. Kollegen bemerken meine Proaktivität, Freundlichkeit und Fähigkeit, eine positive Atmosphäre zu schaffen.',
+      'how.p2': 'Ich glaube, ein Senior Engineer sollte <strong>seine Expertise in Produktentscheidungen verteidigen</strong>: Qualität ist die Summe kleiner technischer Entscheidungen.',
+      'how.p3': 'Ziel — <strong>Führungsrolle im QA</strong>: die Richtung leiten, nicht nur das Produkt.',
+      'off.h': 'Außerhalb der Arbeit', 'off.p': 'Radfahren, Brettspiele, Musik — ich spiele Gitarre.',
+      'foot.upd': 'aktualisiert: Oktober&nbsp;2026',
+      'foot.hint': '↑↑↓↓←→←→BA · oder 5×&nbsp;auf Avatar', 'foot.hintTitle': 'psst… im QA verstecken sich Bugs nicht vor denen, die suchen',
+      'tb.aria': 'Taskleiste', 'tb.start': 'Start',
+      'crt.titleOff': 'CRT-Effekt deaktivieren', 'crt.titleOn': 'CRT-Effekt aktivieren',
+      'hud.caught': 'gefangen:', 'egg.close': 'Schließen',
+      'game.v.fast': 'Senior-Level Reflexe. Regression wäre nicht nötig.',
+      'game.v.good': 'Tolles Ergebnis — Zero Bug Policy eingehalten.',
+      'game.v.slow': 'Alle Bugs gefangen. Langsam, aber keiner ging in Production.',
+      'game.time': 'Zeit:', 'game.record': 'Rekord:', 'game.newRecord': 'neuer Rekord!',
+      'game.cta': 'Sie haben gerade getan, was ich jeden Tag mache. Lassen Sie es uns gemeinsam tun?',
+      'game.writeTg': 'Auf Telegram schreiben', 'game.retry': 'Nochmal',
+      'toast.copied': 'kopiert: ', 'toast.failed': 'Kopieren fehlgeschlagen: ',
+      'toast.gameStart': '🐞 Bugs haben sich ins Resume eingeschlichen — fang sie!', 'toast.gameQuit': 'Bugs sind im Backlog… Scherz, den haben wir nicht 😉'
+    }
+  };
+
+  function applyTranslations(lang) {
+    var t = translations[lang] || translations.ru;
+    document.querySelectorAll('[data-i18n]').forEach(function (el) {
+      var key = el.getAttribute('data-i18n');
+      if (t[key]) el.innerHTML = t[key];
+    });
+    document.querySelectorAll('[data-i18n-attr]').forEach(function (el) {
+      var spec = el.getAttribute('data-i18n-attr');
+      var parts = spec.split(':');
+      if (parts.length === 2) {
+        var attr = parts[0], key = parts[1];
+        if (t[key]) el.setAttribute(attr, t[key]);
+      }
+    });
+    document.querySelectorAll('.lang-sw button').forEach(function (btn) {
+      btn.setAttribute('aria-pressed', btn.getAttribute('data-lang') === lang ? 'true' : 'false');
+    });
+    document.getElementById('crtBtn').setAttribute('title', t[document.body.classList.contains('no-crt') ? 'crt.titleOn' : 'crt.titleOff']);
+  }
+
+  function setLanguage(lang) {
+    if (!translations[lang]) lang = 'en';
+    setLangInQuery(lang);
+    try { localStorage.setItem(I18N_KEY, lang); } catch (e) {}
+    applyTranslations(lang);
+  }
+
+  var lang = getLangFromQuery();
+  if (!lang) {
+    try { lang = localStorage.getItem(I18N_KEY); } catch (e) {}
+  }
+  setLanguage(lang || 'en');
+
+  document.querySelectorAll('.lang-sw button').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var newLang = btn.getAttribute('data-lang');
+      setLanguage(newLang);
+    });
+  });
+
+}());
+</script>
+
+</body>
+</html>
